@@ -830,6 +830,31 @@ class FastMCP:
                 )
             )
 
+        # Always mount both /mcp and /mcp/ for full compatibility, regardless of default
+        _main_path = self.settings.streamable_http_path
+        if _main_path.endswith("/"):
+            _alt_path = _main_path.rstrip("/")
+        else:
+            _alt_path = _main_path + "/"
+        if _alt_path != _main_path:
+            if self._auth_server_provider:
+                routes.append(
+                    Mount(
+                        _alt_path,
+                        app=RequireAuthMiddleware(
+                            handle_streamable_http,
+                            required_scopes,
+                        ),
+                    )
+                )
+            else:
+                routes.append(
+                    Mount(
+                        _alt_path,
+                        app=handle_streamable_http,
+                    )
+                )
+
         routes.extend(self._custom_starlette_routes)
 
         return Starlette(
