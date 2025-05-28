@@ -598,33 +598,34 @@ def test_session_termination(basic_server, basic_server_url):
 
 def test_response(basic_server, basic_server_url):
     """Test response handling for a valid request."""
-    mcp_url = f"{basic_server_url}/mcp"
-    response = requests.post(
-        mcp_url,
-        headers={
-            "Accept": "application/json, text/event-stream",
-            "Content-Type": "application/json",
-        },
-        json=INIT_REQUEST,
-    )
-    assert response.status_code == 200
+    mcp_urls = [f"{basic_server_url}/mcp", f"{basic_server_url}/mcp/"]
+    for mcp_url in mcp_urls:
+        response = requests.post(
+            mcp_url,
+            headers={
+                "Accept": "application/json, text/event-stream",
+                "Content-Type": "application/json",
+            },
+            json=INIT_REQUEST,
+        )
+        assert response.status_code == 200
 
-    # Now terminate the session
-    session_id = response.headers.get(MCP_SESSION_ID_HEADER)
+        # Now terminate the session
+        session_id = response.headers.get(MCP_SESSION_ID_HEADER)
 
-    # Try to use the terminated session
-    tools_response = requests.post(
-        mcp_url,
-        headers={
-            "Accept": "application/json, text/event-stream",
-            "Content-Type": "application/json",
-            MCP_SESSION_ID_HEADER: session_id,  # Use the session ID we got earlier
-        },
-        json={"jsonrpc": "2.0", "method": "tools/list", "id": "tools-1"},
-        stream=True,
-    )
-    assert tools_response.status_code == 200
-    assert tools_response.headers.get("Content-Type") == "text/event-stream"
+        # Try to use the terminated session
+        tools_response = requests.post(
+            mcp_url,
+            headers={
+                "Accept": "application/json, text/event-stream",
+                "Content-Type": "application/json",
+                MCP_SESSION_ID_HEADER: session_id,  # Use the session ID we got earlier
+            },
+            json={"jsonrpc": "2.0", "method": "tools/list", "id": "tools-1"},
+            stream=True,
+        )
+        assert tools_response.status_code == 200
+        assert tools_response.headers.get("Content-Type") == "text/event-stream"
 
 
 def test_json_response(json_response_server, json_server_url):
