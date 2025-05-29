@@ -785,10 +785,16 @@ class FastMCP:
         async def handle_streamable_http(
             scope: Scope, receive: Receive, send: Send
         ) -> None:
-            await self.session_manager.handle_request(scope, receive, send)
+            await self.session_manager.handle_request(
+                scope, 
+                receive, 
+                send)
 
         async def streamable_http_endpoint(request: Request):
-            return await handle_streamable_http(request.scope, request.receive, request._send)  # type: ignore[reportPrivateUsage]
+            return await handle_streamable_http(
+                request.scope, 
+                request.receive, 
+                request._send)  # type: ignore[reportPrivateUsage]
         
         # Normalize the main path (no trailing slash)
         _main_path = self.settings.streamable_http_path.removesuffix("/")
