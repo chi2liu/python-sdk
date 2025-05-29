@@ -967,35 +967,19 @@ def test_build_metadata(
         ),
         revocation_options=RevocationOptions(enabled=True),
     )
-    print("Built OAuth Metadata:")
-    print(metadata)
 
-    print("Expected OAuth Metadata:")
-    snapshot_metadata = snapshot(
+    assert metadata == snapshot(
         OAuthMetadata(
             issuer=AnyHttpUrl(issuer_url),
             authorization_endpoint=AnyHttpUrl(authorization_endpoint),
             token_endpoint=AnyHttpUrl(token_endpoint),
             registration_endpoint=AnyHttpUrl(registration_endpoint),
             scopes_supported=["read", "write", "admin"],
-            response_types_supported=["code"],
-            response_modes_supported=None,
             grant_types_supported=["authorization_code", "refresh_token"],
             token_endpoint_auth_methods_supported=["client_secret_post"],
-            token_endpoint_auth_signing_alg_values_supported=None,
             service_documentation=AnyHttpUrl(service_documentation_url),
-            ui_locales_supported=None,
-            op_policy_uri=None,
-            op_tos_uri=None,
             revocation_endpoint=AnyHttpUrl(revocation_endpoint),
             revocation_endpoint_auth_methods_supported=["client_secret_post"],
-            revocation_endpoint_auth_signing_alg_values_supported=None,
-            introspection_endpoint=None,
-            introspection_endpoint_auth_methods_supported=None,
-            introspection_endpoint_auth_signing_alg_values_supported=None,
             code_challenge_methods_supported=["S256"],
         )
     )
-    print(snapshot_metadata)
-    
-    assert metadata == snapshot_metadata
